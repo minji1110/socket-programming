@@ -7,10 +7,12 @@
 #include <time.h>
 #define MAXLINE 30
 
+void error_handling(char *msg);
 int main(int argc,char *argv[]){
     int listen_fd;    
     int conn_fd;
-    struct sockaddr_in serv_addr;
+    struct sockaddr_in serv_addr,clnt_addr;
+    socklen_t len=sizeof(clnt_addr);
     char buff[MAXLINE];
     time_t ticks;
 
@@ -23,9 +25,12 @@ int main(int argc,char *argv[]){
 
     if(bind(listen_fd,(struct sockaddr*)&serv_addr,sizeof(serv_addr))==-1)
         error_handling("bind() error");
+    
+    if(listen(listen_fd,SOMAXCONN)<0)
+        error_handling("listen() error");
 
     for(;;){
-        conn_fd=accept(listen_fd,(struct sockaddr*) NULL,NULL);
+        conn_fd=accept(listen_fd,(struct sockaddr*) &clnt_addr,&len);
 
         ticks=time(NULL);
         snprintf(buff,sizeof(buff),"%.24s\r\n",ctime(&ticks));
