@@ -3,6 +3,8 @@
     "__functional_base": "cpp",
     "functional": "cpp",
     "string.h": "c",
-    "socket.h": "c"
+    "socket.h": "c",
+    "istream": "cpp",
+    "locale": "cpp"
   }
 }
