@@ -44,20 +44,22 @@ int main(int argc, char const *argv[])
 		    error_handling("accept() error");
         else printf("accept() return!\n");
 
-        //자식 프로세스
+        //자식 프로세스 : echo 기능 실행
         if((childpid=fork())==0){
             close(listenfd);
             str_echo(connfd);
             close(connfd);
 
-            fputs("클라이언트 연결 해제 완료!",stdout);
+            printf("클라이언트 연결 해제 , pid = %d\n",getpid());
             exit(0);
 
         }
-        //부모 프로세스
+        //부모 프로세스 : 해당 소켓 close 후, 또 다른 클라이언트를 accept 
+        printf("fork(), child pid = %d\n",childpid);
         close(connfd);
     } 
     close(listenfd);
+
     return 0;
 }
 
@@ -67,7 +69,7 @@ void str_echo(int connfd){
 
     again:
         while((n=read(connfd,buf,BUF_SIZE))>0) {
-            //받은 문자열을 그대로 전송
+            //받은 문자열을 그대로 echo
             write(connfd, buf, n);
         }
 

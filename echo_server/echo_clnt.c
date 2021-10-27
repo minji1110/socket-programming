@@ -28,9 +28,10 @@ int main(int argc, char *argv[]){
 	serv_addr.sin_addr.s_addr=inet_addr(argv[1]);
 	serv_addr.sin_port=htons(atoi(argv[2]));
 
-    //서버에 접속 요청
+    //서버에 연결 요청
 	if(connect(sockfd,(struct sockaddr*)&serv_addr,sizeof(serv_addr))==-1)
 		error_handling("connect() error");
+        
     else {
         printf("connect() return!\n");
         str_cli(stdin, sockfd);
@@ -42,19 +43,21 @@ int main(int argc, char *argv[]){
 //fgets로 sendline에 문자열 읽고(사용자입력), 읽은것을 서버에 write.
 //readline으로 recvline에 서버에서 온 문자열을 읽고, fputs로 화면에 출력.
 void str_cli(FILE *fp, int sockfd){
+    int n;
     char sendline[BUF_SIZE];
     char recvline[BUF_SIZE];
 
     while(1){
         fputs("메세지 입력 : ",stdout);
-        char *msg= fgets(sendline,BUF_SIZE,fp);
-
-        if(msg==NULL) break;
+        
+        char * input=fgets(sendline,BUF_SIZE,fp);
+        if(input==NULL) break;
 
         write(sockfd, sendline, strlen(sendline));
-        if(read(sockfd, recvline, BUF_SIZE-1)==0)
+        if((n=read(sockfd, recvline, BUF_SIZE-1))==0)
             error_handling("str_sli() error, server terminated prematurely! ");
         
+        recvline[n]=0;
         fputs(recvline,stdout);
     }
 }
