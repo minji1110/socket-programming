@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#define BUF_SIZE 10
+#define BUF_SIZE 100
 void error_handling(char *msg);
 
 int main(int argc, char const *argv[])
@@ -83,9 +83,8 @@ int main(int argc, char const *argv[])
                     printf("close! fd=%d\n",readable_fd);
                 }
                 else{
-                    write(readable_fd, buf, n);
-                    fputc('\n',stdout);
-                    sleep(3);
+                    write(readable_fd, buf, n+1);
+                    //sleep(3);
                 }
 
                 //더이상 readable한 소켓 없는경우 뒷부분은 안봐도 됨, 다시 select 대기 상태로
