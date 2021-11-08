@@ -5,10 +5,13 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <errno.h>
+#include <signal.h>
+#include <sys/wait.h>
 
 #define BUF_SIZE 30
 void error_handling(char *msg);
 void str_echo(int connfd);
+void sig_child(int sig_no);
 
 int main(int argc, char const *argv[])
 {
@@ -21,6 +24,14 @@ int main(int argc, char const *argv[])
         printf("Usage : %s <port>\n",argv[0]);
         exit(1);
     }
+
+    struct sigaction action;
+    int state;
+
+    action.sa_handler=sig_child; //시그널 발생 시 호출할 함수
+    sigemptyset(&action.sa_mask);   
+    action.sa_flags=0;
+    state=sigaction(SIGCHLD, &action, 0); //SIGCHILD 발생시 지정된 action을 실행
 
     listenfd=socket(AF_INET,SOCK_STREAM,0);
     bzero(&servaddr,sizeof(servaddr));
@@ -40,8 +51,13 @@ int main(int argc, char const *argv[])
         clientlen=sizeof(clntaddr);
         connfd=accept(listenfd,(struct sockaddr*) &clntaddr,&clientlen);
         
-        if(connfd==-1)
-		    error_handling("accept() error");
+        if(connfd==-1){
+            if(errno==EINTR){
+                printf("EINTR error! continue ...\n");
+            }
+            else error_handling("accept() error");
+        }
+		    
         else printf("accept() return!\n");
 
         //자식 프로세스 : echo 기능 실행
@@ -79,6 +95,18 @@ void str_echo(int connfd){
 
 void error_handling(char *msg){
     perror(msg);
-	// fputc('\n',stderr);
+	fputc('\n',stderr);
 	exit(1);
 }
+
+void sig_child(int sig_no){
+    pid_t pid;
+    int status;
+
+    while((pid=waitpid(-1,&status,WNOHANG))>0){
+         printf("child %d terminated!\n",pid);
+    }
+
+    return;
+}
+

@@ -1,7 +1,10 @@
 *.bin
 *.xml
+.vscode/settings.json
+
 # Prerequisites
 *.d
+*.txt
 
 # Object files
 *.o

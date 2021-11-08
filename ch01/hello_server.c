@@ -43,6 +43,7 @@ int main(int argc, char *argv[]){
 	write(clnt_sock,message,sizeof(message));
 	close(clnt_sock);
 	close(serv_sock);
+	
 	return 0;
 }
 

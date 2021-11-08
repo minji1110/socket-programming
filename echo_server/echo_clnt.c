@@ -7,7 +7,7 @@
 
 void error_handling(char *message);
 void str_cli(FILE *fp, int sockfd);
-#define BUF_SIZE 1024
+#define BUF_SIZE 1000
 
 int main(int argc, char *argv[]){
     int sockfd;
@@ -32,11 +32,9 @@ int main(int argc, char *argv[]){
 	if(connect(sockfd,(struct sockaddr*)&serv_addr,sizeof(serv_addr))==-1)
 		error_handling("connect() error");
         
-    else {
-        printf("connect() return!\n");
-        str_cli(stdin, sockfd);
-    }
-
+    
+     
+    str_cli(stdin, sockfd);
     exit(0);
 }
 
